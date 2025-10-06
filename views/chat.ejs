@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const username = "<%= username %>";
+  </script>
+  <script src="/js/chat.js" defer></script>
+  <link rel="stylesheet" href="/css/stylechat.css">
+</head>
+<body>
+  <div class="chat-container">
+    <p class="chat-heading">CHAT</p>
+
+    <textarea id="chatArea" class="chat-area" readonly>
+<% mensajes.forEach(m => { %>
+<%= new Date(m.fecha._seconds * 1000).toLocaleString() %> - <%= m.usuario %>: <%= m.mensaje %>
+<% }) %>
+    </textarea>
+
+    <div class="chat-user">
+      <label><%= username %></label>
+    </div>
+
+    <div class="chat-input-group">
+      <input id="input" class="chat-input" type="text" placeholder="Escribe tu mensaje" />
+      <button id="sendBtn" class="chat-btn">Enviar</button>
+    </div>
+  </div>
+</body>
+</html>
