@@ -14,14 +14,15 @@ sendBtn.addEventListener('click', () => {
 });
 
 socket.on('chat message', (data) => {
-  const linea = `- ${data.usuario}\n ${new Date(data.fecha._seconds * 1000).toLocaleString()} : ${data.mensaje}\n`;
+  // La fecha siempre es un número (milisegundos)
+  const linea = `- ${data.usuario}\n ${new Date(data.fecha).toLocaleString()} : ${data.mensaje}\n`;
   chatArea.value += linea;
 });
 
 socket.on('chat history', (mensajes) => {
   chatArea.value = ''; // Limpiar el área
   mensajes.forEach(data => {
-    const linea = `- ${data.usuario}\n ${new Date(data.fecha._seconds * 1000).toLocaleString()} : ${data.mensaje}\n`;
+    const linea = `- ${data.usuario}\n ${new Date(data.fecha).toLocaleString()} : ${data.mensaje}\n`;
     chatArea.value += linea;
   });
 });

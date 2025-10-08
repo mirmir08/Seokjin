@@ -54,18 +54,33 @@ app.post('/chat', async (req, res) => {
 io.on('connection', async (socket) => {
   // Enviar historial al nuevo usuario conectado
   const snapshot = await db.collection('chat').orderBy('fecha').get();
-  const mensajes = snapshot.docs.map(doc => doc.data());
+  // Convertir Firestore Timestamp a milisegundos
+  const mensajes = snapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      usuario: data.usuario,
+      mensaje: data.mensaje,
+      fecha: data.fecha instanceof Date
+        ? data.fecha.getTime()
+        : (data.fecha._seconds ? data.fecha._seconds * 1000 : Date.now())
+    };
+  });
   socket.emit('chat history', mensajes);
 
   // Escuchar nuevos mensajes
   socket.on('chat message', async (data) => {
+    const fechaJs = new Date();
     const nuevoMensaje = {
       usuario: data.usuario,
       mensaje: data.mensaje,
-      fecha: new Date()
+      fecha: fechaJs.getTime()
     };
 
-    await db.collection('chat').add(nuevoMensaje);
+    await db.collection('chat').add({
+      usuario: nuevoMensaje.usuario,
+      mensaje: nuevoMensaje.mensaje,
+      fecha: fechaJs // Guardar como Date en Firestore
+    });
     io.emit('chat message', nuevoMensaje);
   });
 });
